@@ -1,0 +1,320 @@
+// -*- mode: jsonc -*-
+{
+    "layer": "top", // Waybar at top layer
+    "position": "top", // Waybar position (top|bottom|left|right)
+    "spacing": 0, // Gaps between modules (4px)
+
+    // Choose the order of the modules
+    "modules-left": [
+        "custom/appmenu",
+        "custom/filemanager",
+        "custom/browser",
+        "custom/notes",
+        //"sway/mode",
+        //"sway/scratchpad",
+        //"custom/media"
+        "sway/workspaces"
+    ],
+    "modules-center": [
+        "clock"
+    ],
+    "modules-right": [
+        "tray",
+        // "mpd",
+        // "keyboard-state",
+        // "backlight",
+        // "idle_inhibitor",
+        "temperature",
+        "cpu",
+        "memory",
+        "custom/notification",
+        "pulseaudio",
+        "bluetooth",
+        "custom/vpn",
+        "network",
+        "battery",
+        //  "battery#bat2",
+        //   "power-profiles-daemon",
+        "custom/power"
+    ],
+
+    // Modules configuration
+    "sway/workspaces": {
+        "disable-scroll": false,
+        "all-outputs": true,
+        //   "warp-on-scroll": false,
+        "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "active": ""
+        },
+        "persistent-workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": [],
+            "6": []
+        }
+    },
+    "keyboard-state": {
+        "numlock": true,
+        "capslock": true,
+        "format": "{name} {icon}",
+        "format-icons": {
+            "locked": "",
+            "unlocked": ""
+        }
+    },
+    "sway/mode": {
+        "format": "<span style=\"italic\">{}</span>"
+    },
+    "sway/scratchpad": {
+        "format": "{icon} {count}",
+        "show-empty": false,
+        "format-icons": ["", ""],
+        "tooltip": true,
+        "tooltip-format": "{app}: {title}"
+    },
+    "mpd": {
+        "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
+        "format-disconnected": "Disconnected ",
+        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+        "unknown-tag": "N/A",
+        "interval": 5,
+        "consume-icons": {
+            "on": " "
+        },
+        "random-icons": {
+            "off": "<span color=\"#f53c3c\"></span> ",
+            "on": " "
+        },
+        "repeat-icons": {
+            "on": " "
+        },
+        "single-icons": {
+            "on": "1 "
+        },
+        "state-icons": {
+            "paused": "",
+            "playing": ""
+        },
+        "tooltip-format": "MPD (connected)",
+        "tooltip-format-disconnected": "MPD (disconnected)"
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+    "tray": {
+        // "icon-size": 21,
+        "spacing": 10
+        // "icons": {
+        //   "blueman": "bluetooth",
+        //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
+        // }
+    },
+    "clock": {
+        // "timezone": "America/Denver",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format": "{:L%a %b %d %I:%M %p}",
+        "format-alt": "{:L%d %B W%v %Y}",
+
+        "calendar": {
+            "mode": "month",
+            "mode-mon-col": 3,
+            "weeks-pos": "right",
+            "on-scroll": 1,
+            "format": {
+                "today": "<span color='#7dc4e4'><b>{}</b></span>"
+            }
+        }
+    },
+    "cpu": {
+        "format": "<span color='#7dc4e4'> </span>{usage}%",
+        "tooltip": false,
+        "on-click": "foot -e btop"
+    },
+    "memory": {
+        "states": {
+            "c": 90,
+            "h": 60,
+            "m": 30
+        },
+        "interval": 30,
+        "format": "<span color='#7dc4e4'> </span>{used}GB",
+        "rotate": 0,
+        "format-m": "<span color='#7dc4e4'> </span>{used}GB",
+        "format-h": "<span color='#7dc4e4'> </span>{used}GB",
+        "format-c": "<span color='#7dc4e4'> </span>{used}GB",
+        "format-alt": "<span color='#7dc4e4'> </span>{percentage}%",
+        "max-length": 10,
+        "tooltip": true,
+        "tooltip-format": "\udb83\udf86 Memory usage: {percentage}%\n\ue266 Used: {used:0.2f}GB / {total:0.2f}GB\n\uf85a Available: {availGB:0.2f}GB\n\uf233 Swap used: {swapUsed:0.2f}GB / {swapTotal:0.2f}GB ({swapPercentage}%)"
+    },
+    "temperature": {
+        // "thermal-zone": 2,
+        // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+        "critical-threshold": 80,
+        // "format-critical": "{temperatureC}°C {icon}",
+        "format": "<span color='#7dc4e4'></span> {temperatureF}°",
+        "format-icons": [""],
+        "tooltip": false,
+        "on-click": "system monitor"
+    },
+    "backlight": {
+        // "device": "acpi_video1",
+        "format": "{percent}% {icon}",
+        "format-icons": ["", "", "", "", "", "", "", "", ""]
+    },
+    "battery": {
+        "states": {
+            // "good": 95,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-full": "{icon} {capacity}%",
+        "format-charging": " {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-alt": "{time} {icon}",
+        // "format-good": "", // An empty format will hide the module
+        // "format-full": "",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "battery#bat2": {
+        "bat": "BAT2"
+    },
+    "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+        "tooltip": true,
+        "format-icons": {
+            "default": "",
+            "performance": "",
+            "balanced": "",
+            "power-saver": ""
+        }
+    },
+    "network": {
+        // "interface": "wlp2*", // (Optional) To force the use of this interface
+        "tooltip": true,
+        "format-wifi": "\uf1eb ",
+        "rotate": 0,
+        "format-ethernet": "\udb80\ude00 ",
+        "tooltip-format": "Network: <big><b>{essid}</b></big>\nSignal strength: <b>{signaldBm}dBm ({signalStrength}%)</b>\nFrequency: <b>{frequency}MHz</b>\nInterface: <b>{ifname}</b>\nIP: <b>{ipaddr}/{cidr}</b>\nGateway: <b>{gwaddr}</b>\nNetmask: <b>{netmask}</b>",
+        "format-linked": "\udb80\ude00 {ifname} (No IP)",
+        "format-disconnected": "\udb81\uddaa ",
+        "tooltip-format-disconnected": "Disconnected",
+        "interval": 2,
+        "on-click": "nm-connection-editor"
+    },
+    "bluetooth": {
+        "format": "",
+        "format-off": "󰂲",
+        "format-disabled": "󰂲",
+        "format-connected": "󰂱",
+        "format-no-controller": "",
+        "tooltip-format": "Devices connected: {num_connections}",
+        "on-click": "blueman-manager"
+    },
+    "pulseaudio": {
+        // "scroll-step": 1, // %, can be a float
+        "format": "{icon}",
+        "format-bluetooth": "{volume}% {icon} {format_source}",
+        "format-bluetooth-muted": "󰅶 {icon} {format_source}",
+        "format-muted": "󰅶 {format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "tooltip-format": "{icon} {desc} | {volume}%",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol"
+    },
+    "custom/media": {
+        "format": "{icon} {text}",
+        "return-type": "json",
+        "max-length": 40,
+        "format-icons": {
+            "spotify": "",
+            "default": "🎜"
+        },
+        "escape": true,
+        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
+        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+    },
+    "custom/appmenu": {
+        "format": "  ",
+        "on-click": "fuzzel --config ~/.config/sway/fuzzel/fuzzel.ini",
+        "tooltip": true,
+        "tooltip-format": "Open App Menu"
+    },
+    "custom/filemanager": {
+        "format": "  ",
+        "on-click": "thunar",
+        "tooltip": true,
+        "tooltip-format": "Open File Manager"
+    },
+            
+    "custom/browser": {
+        "format": "  ",
+        "on-click": "brave-origin",
+        "tooltip": true,
+        "tooltip-format": "Browse the Web"
+        
+    },
+    "custom/notes": {
+        "format": "  ",
+        "on-click": "flatpak run com.notesnook.Notesnook",
+        "tooltip": true,
+        "tooltip-format": "Open Notes"
+    },
+   "custom/vpn": {
+    "exec": "$HOME/.config/sway/scripts/vpn-status.sh",
+    "return-type": "json",
+    "interval": 5,
+    "format": "{}",
+    "on-click": "$HOME/.config/sway/scripts/vpn-toggle.sh"
+    },
+    "custom/power": {
+        "format" : "⏻ ",
+        "tooltip": false,
+        "on-click": "~/.config/sway/scripts/control-center"
+    },
+    "custom/notification": {
+            "tooltip": false,
+            "format": "{icon}",
+            "format-icons": {
+                "notification": "<span foreground='#D29922'>󰂚</span>",
+                "none": "<span foreground='#d0d7de'>󰂚</span>",
+                "dnd-notification": "<span foreground='#D29922'>󰂛</span>",
+                "dnd-none": "<span foreground='#d0d7de'>󰂛</span>",
+                "inhibited-notification": "<span foreground='#D29922'>󰂚</span>",
+                "inhibited-none": "<span foreground='#d0d7de'>󰂚</span>",
+                "dnd-inhibited-notification": "<span foreground='#D29922'>󰂛</span>",
+                "dnd-inhibited-none": "<span foreground='#d0d7de'>󰂛</span>"
+            },
+            "return-type": "json",
+            "exec-if": "which swaync-client",
+            "exec": "swaync-client -swb --skip-wait",
+            "on-click": "swaync-client -t",
+            "on-click-right": "swaync-client -d -sw",
+            "escape": true,
+            "restart-interval": 3
+    }
+}

@@ -1,0 +1,16 @@
+com.notesnook.Notesnook
+io.gitlab.librewolf-community
+com.stremio.Stremio
+org.kde.kdenlive
+org.librecad.librecad
+net.sourceforge.mcomix
+com.transmissionbt.Transmission
+net.filebot.FileBot
+app.ytmdesktop.ytmdesktop
+media.emby.EmbyTheater
+net.openra.OpenRA
+net.wz2100.wz2100
+io.github.openhv.OpenHV
+info.beyondallreason.bar
+net.retrodeck.retrodeck
+io.gitlab.adhami3310.Impression

@@ -1,0 +1,77 @@
+#!/bin/bash
+# changevolume - volume control with an on-screen notification.
+# Sends the level as an int:value hint so swaync draws its own progress bar,
+# plus a text bar in the body for notification daemons that don't.
+#
+# Usage: changevolume {up|down|mute}
+
+VOL_STEP=5
+
+is_muted() { [ "$(pamixer --get-mute)" = true ]; }
+
+get_icon() {
+	if is_muted; then
+		echo "audio-volume-muted"
+	elif [ "$1" -le 30 ]; then
+		echo "audio-volume-low"
+	elif [ "$1" -le 70 ]; then
+		echo "audio-volume-medium"
+	else
+		echo "audio-volume-high"
+	fi
+}
+
+make_bar() {
+	local vol=$1
+	local filled=$((vol * 2 / 5))
+	local empty=$((40 - filled))
+	local bar=""
+	for ((i = 0; i < filled; i++)); do bar+="█"; done
+	for ((i = 0; i < empty; i++)); do bar+="░"; done
+	echo "$bar"
+}
+
+send_notification() {
+	local volume icon bar
+	volume=$(pamixer --get-volume)
+	icon=$(get_icon "$volume")
+	bar=$(make_bar "$volume")
+	notify-send -a "changevolume" -u low \
+		-h string:x-canonical-private-synchronous:volume \
+		-h int:value:"$volume" \
+		-i "$icon" \
+		"Volume ${volume}%" \
+		"$bar" \
+		-t 2000
+}
+
+case $1 in
+up)
+	pamixer -u
+	pamixer -i "$VOL_STEP" --allow-boost
+	send_notification
+	;;
+down)
+	pamixer -u
+	pamixer -d "$VOL_STEP" --allow-boost
+	send_notification
+	;;
+mute)
+	pamixer -t
+	if is_muted; then
+		notify-send -a "changevolume" -u low \
+			-h string:x-canonical-private-synchronous:volume \
+			-h int:value:0 \
+			-i "audio-volume-muted" \
+			"Volume Muted" \
+			"$(make_bar 0)" \
+			-t 2000
+	else
+		send_notification
+	fi
+	;;
+*)
+	echo "Usage: $(basename "$0") {up|down|mute}" >&2
+	exit 1
+	;;
+esac

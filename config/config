@@ -1,0 +1,83 @@
+# sway config
+##################################
+###### Terry's Sway Config #######
+##################################
+
+### Variables
+set $mod Mod4
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+set $term foot
+set $config_dir ~/.config/sway
+set $menu fuzzel --config ~/.config/sway/fuzzel/fuzzel.ini
+
+### Output configuration
+# Simple static wallpaper with swaybg
+output * bg /home/terryb/Pictures/wallpapers/wallhaven-218x7m_3440x1440.png fill
+
+# For multiple monitors:
+# output HDMI-A-1 resolution 1920x1080 position 1920,0
+
+# HiDPI / 4K: sway defaults to scale 1, so type is tiny on a 4K screen.
+# Uncomment to scale the whole display — fonts, bar, cursor, and XWayland
+# apps all follow it. Fractional values like 1.5 work too (unlike X11).
+# output * scale 2
+
+### Idle configuration
+# Monitor off after 15 min idle, back on at the first input. Super+Shift+x
+# (scripts/screen-off) does the same on demand. No lock screen by design.
+exec swayidle -w \
+    timeout 600 'swaymsg "output * power off"' \
+         resume 'swaymsg "output * power on"'
+
+### Input configuration
+input type:touchpad {
+    dwt enabled
+    tap enabled
+    natural_scroll enabled
+    middle_emulation enabled
+}
+
+# Specific Apple Touchpad (use if touchpad config above does not work)
+# Change input name to actual touchpad device name
+#input "1452:610:bcm5974" {
+       # dwt enabled
+       # tap enabled
+       # natural_scroll enabled
+       # middle_emulation enabled
+#}
+
+input type:keyboard {
+    xkb_numlock enabled
+    repeat_delay 300
+    repeat_rate 50
+}
+
+input type:pointer {
+       natural_scroll enabled
+}
+
+### Appearance
+font pango:Lilex Nerd Font Mono 11
+
+# Colors (theme-swappable via current-theme symlink)
+#include $config_dir/current-theme/colors.conf
+
+# class                 border   backgr  text    indicator child_border
+#client.focused          $barbie  $cyan   $gray   $blue     $barbie
+#client.focused_inactive $gray    $bg     $fg     $bg       $gray
+#client.unfocused        $gray    $bg     $fg     $bg       $gray
+#client.urgent           $blue    $blue   $bg     $blue     $blue
+
+### Includes
+include $config_dir/workspaces.conf
+include $config_dir/rules.conf
+include $config_dir/keybindings.conf
+
+### Autostart
+exec_always $config_dir/scripts/autostart.sh
+
+#include /etc/sway/config.d/*

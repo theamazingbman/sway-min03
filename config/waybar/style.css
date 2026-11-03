@@ -1,0 +1,286 @@
+/* --- Color Variables --- */
+@define-color bg-trans alpha(@base, 0.65);
+@define-color base     #000000;
+@define-color surface  #202020;
+@define-color overlay  #363636;
+@define-color text     #d5d8e0;
+@define-color lavender #b7bdf8;
+@define-color sapphire #7dc4e4;
+@define-color blue     #285577;
+@define-color green    #a6da95;
+@define-color yellow   #eed49f;
+@define-color red      #ed8796;
+@define-color grey     #6e6d6d;
+@define-color mauve    #c6a0f6;
+
+
+/* --- Global Configurations --- */
+* {
+    font-family:
+        "JetBrainsMono Nerd Font",
+        "Font Awesome 6 Free",
+        "Helvetica Neue",
+        sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+
+/* --- Automatic Bar Height --- */
+window#waybar {
+    min-height: 0;
+    background-color: #000000;
+    color: @text;
+    transition-property: background-color;
+    transition-duration: 0.5s;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+    min-height: 0;
+}
+
+
+/* --- Workspaces Container (No Outline) --- */
+#workspaces {
+    padding: 0px 5px;
+    margin: 3px 4px;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+
+/* --- Workspace Buttons --- */
+#workspaces button {
+    padding: 1px 4px;
+    margin: 1px 1px;
+    color: @text;
+    background-color: transparent;
+    border-radius: 7px;
+    transition: all 0.3s ease;
+}
+
+/* Workspace Hover */
+#workspaces button:hover {
+    background-color: @overlay;
+    color: @lavender;
+}
+
+/* Active Workspace */
+#workspaces button.focused {
+    background-color: @blue;
+    color: @text;
+    min-width: 25px;
+}
+
+/* Occupied Workspace */
+#workspaces button:not(.empty):not(.focused):not(.urgent) {
+    background-color: @grey;
+    color: @text;
+    min-width: 25px;
+}
+
+/* Empty Workspace */
+#workspaces button.empty:not(.focused) {
+    background-color: transparent;
+    color: @text;
+}
+
+/* Urgent Workspace */
+#workspaces button.urgent {
+    background-color: @red;
+    color: @base;
+}
+
+
+/* --- General Module Formatting --- */
+#clock,
+#battery,
+#disk,
+#backlight,
+#network,
+#pulseaudio,
+#wireplumber,
+#custom-media,
+#tray,
+#mode,
+#idle_inhibitor,
+#scratchpad,
+#power-profiles-daemon,
+#bluetooth,
+#mpd {
+    padding: 2px 6px;
+    margin: 2px 2px;
+    color: @text;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+
+/* --- System Stats Shared Pill --- */
+#temperature,
+#cpu,
+#memory {
+    padding: 2px 4px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 0;
+    margin-right: 0;
+    color: @text;
+    background-color: @base;
+    border-top: 1px solid @overlay;
+    border-bottom: 1px solid @overlay;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* Left Rounded Edge */
+#temperature {
+    margin-left: 8px;
+    border-left: 1px solid @overlay;
+    border-radius: 10px 0 0 10px;
+}
+
+/* Middle Section */
+#cpu {
+    border-left: none;
+    border-right: none;
+}
+
+/* Right Rounded Edge */
+#memory {
+    margin-right: 8px;
+    border-right: 1px solid @overlay;
+    border-radius: 0 10px 10px 0;
+    min-width: 78px;
+}
+
+
+/* --- Clock --- */
+#clock {
+    color: @text;
+    font-weight: bold;
+}
+
+
+/* --- Battery --- */
+#battery {
+    color: @green;
+}
+
+#battery.charging,
+#battery.plugged {
+    color: @green;
+}
+
+#battery.critical:not(.charging) {
+    color: @red;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+
+/* --- Network --- */
+#network {
+    color: @text;
+}
+
+#network.disconnected {
+    color: @red;
+}
+
+
+/* --- VPN --- */
+#custom-vpn.connected {
+    color: @sapphire;
+}
+
+#custom-vpn.disconnected {
+    color: @overlay;
+}
+
+#custom-vpn.error {
+    color: @red;
+}
+
+
+/* --- Audio --- */
+#pulseaudio {
+    color: @text;
+}
+
+#pulseaudio.muted {
+    color: @overlay;
+    background-color: transparent;
+}
+
+
+/* --- Bluetooth --- */
+#bluetooth {
+    color: @text;
+}
+
+
+/* --- System Monitor Colors --- */
+#temperature,
+#cpu,
+#memory {
+    color: @text;
+}
+
+/* System Monitor Icons */
+#temperature label:first-child,
+#cpu label:first-child,
+#memory label:first-child {
+    color: @sapphire;
+}
+
+/* --- System Tray --- */
+#tray {
+    padding: 0px 10px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: @red;
+}
+
+
+/* --- Hardware Critical Animations --- */
+@keyframes blink {
+    to {
+        background-color: @surface;
+        color: @red;
+    }
+}
+
+
+/* --- Right-Side System Module Spacing --- */
+#custom-notification,
+#pulseaudio,
+#bluetooth,
+#network,
+#custom-power {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+
+/* --- Power Button Edge Spacing --- */
+#custom-power {
+    margin-right: 12px;
+}

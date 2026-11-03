@@ -1,0 +1,55 @@
+
+#!/usr/bin/env bash
+
+# Fuzzel Power Menu for Sway
+
+FUZZEL_CONFIG="$HOME/.config/sway/fuzzel/fuzzel.ini"
+SCRIPTS="$HOME/.config/sway/scripts"
+
+# Verify Fuzzel is installed
+if ! command -v fuzzel >/dev/null 2>&1; then
+    notify-send "Power Menu" "Fuzzel is not installed."
+    exit 1
+fi
+
+# Verify Fuzzel configuration exists
+if [[ ! -f "$FUZZEL_CONFIG" ]]; then
+    notify-send "Power Menu" "Fuzzel configuration not found."
+    exit 1
+fi
+
+# Display power menu
+chosen=$(
+    printf '%s\n' \
+        "  Cancel" \
+        "󰖔  Screen Off" \
+        "󰍃  Logout" \
+        "  Shutdown" \
+        "󰜉  Reboot" |
+    fuzzel --dmenu \
+        --prompt="Power Menu: " \
+        --config="$FUZZEL_CONFIG"
+)
+
+# Handle selection
+case "$chosen" in
+    *"Screen Off")
+        if [[ -x "$SCRIPTS/screen-off" ]]; then
+            "$SCRIPTS/screen-off"
+        else
+            notify-send "Power Menu" "Screen-off script is missing or not executable."
+        fi
+        ;;
+    *"Logout")
+        swaymsg exit
+        ;;
+    *"Shutdown")
+        systemctl poweroff
+        ;;
+    *"Reboot")
+        systemctl reboot
+        ;;
+    *)
+        exit 0
+        ;;
+esac
