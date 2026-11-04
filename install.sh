@@ -169,7 +169,13 @@ PACKAGES_PORTALS=(
     xdg-user-dirs xdg-utils desktop-file-utils
     xdg-desktop-portal xdg-desktop-portal-wlr xdg-desktop-portal-gtk dconf
 )
-PACKAGES_SECURITY=(polkit polkit-gnome flatpak bubblewrap libseccomp)
+PACKAGES_SECURITY=(
+    polkit
+    mate-polkit
+    flatpak
+    bubblewrap
+    libseccomp
+)
 PACKAGES_MEDIA=(mpv imv celluloid)
 PACKAGES_APPEARANCE=(
     adw-gtk3-theme adwaita-icon-theme papirus-icon-theme
@@ -323,6 +329,26 @@ msg "Copying Sway configuration..."
 mkdir -p "$CONFIG_DIR"
 [[ -d "$SCRIPT_DIR/config" ]] || die "Config directory not found: $SCRIPT_DIR/config"
 cp -a "$SCRIPT_DIR/config/." "$CONFIG_DIR/" || die "Failed to copy configs"
+
+# Configure the MATE PolicyKit authentication agent for Sway.
+POLKIT_AGENT="/usr/libexec/polkit-mate-authentication-agent-1"
+SWAY_CONFIG="$CONFIG_DIR/config"
+
+if [[ -x "$POLKIT_AGENT" && -f "$SWAY_CONFIG" ]]; then
+    if ! grep -qF "polkit-mate-authentication-agent-1" "$SWAY_CONFIG"; then
+        msg "Adding MATE PolicyKit authentication agent to Sway..."
+        cat >> "$SWAY_CONFIG" <<'POLKIT'
+
+# PolicyKit authentication agent
+exec /usr/libexec/polkit-mate-authentication-agent-1
+POLKIT
+    else
+        msg "PolicyKit authentication agent already configured."
+    fi
+else
+    warn "MATE PolicyKit agent or Sway config not found; check startup configuration."
+fi
+
 
 # Make scripts executable.
 SWAY_SCRIPTS="$CONFIG_DIR/scripts"
