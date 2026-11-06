@@ -5,7 +5,7 @@
 # Foot + Fuzzel + SwayNC + Thunar + Flatpak
 # ==========================================================
 
-set -Eeuo pipefail
+set -Euo pipefail
 
 ONLY_CONFIG=false
 INSTALL_PRINTING="${INSTALL_PRINTING:-false}"
@@ -14,6 +14,8 @@ INSTALL_DEV_TOOLS="${INSTALL_DEV_TOOLS:-false}"
 INSTALL_EXTRA_APPS="${INSTALL_EXTRA_APPS:-false}"
 INSTALL_BRAVE="${INSTALL_BRAVE:-true}"
 INSTALL_CODECS="${INSTALL_CODECS:-true}"
+# SDDM is optional; Fedora Sway Spin may already have a login manager.
+INSTALL_SDDM="${INSTALL_SDDM:-false}"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -32,6 +34,7 @@ Optional package groups are enabled with environment variables:
   INSTALL_QT_TOOLS=true
   INSTALL_DEV_TOOLS=true
   INSTALL_EXTRA_APPS=true
+  INSTALL_SDDM=true       Install and enable SDDM (default: false)
 USAGE
             exit 0
             ;;
@@ -51,6 +54,7 @@ RED='\033[0;31m'; YELLOW='\033[1;33m'; GREEN='\033[0;32m'; CYAN='\033[0;36m'; NC
 die()  { echo -e "${RED}ERROR: $*${NC}" >&2; exit 1; }
 warn() { echo -e "${YELLOW}WARNING: $*${NC}" >&2; }
 msg()  { echo -e "${CYAN}$*${NC}"; }
+FAILED_PACKAGES=()
 
 if [[ "$ONLY_CONFIG" == false ]]; then
     [[ -r /etc/os-release ]] || die "Cannot read /etc/os-release to verify OS"
@@ -78,8 +82,18 @@ fi
 install_group() {
     local label="$1"
     shift
+    local package
+
     msg "Installing ${label}..."
-    sudo dnf install -y "$@" || die "Failed to install ${label}: $*"
+    # Install one package at a time: a missing package cannot block its siblings.
+    for package in "$@"; do
+        if sudo dnf install -y "$package"; then
+            msg "Installed or already present: $package"
+        else
+            warn "Could not install/find '$package'; skipping it."
+            FAILED_PACKAGES+=("$package")
+        fi
+    done
 }
 
 install_user_fonts() {
@@ -90,22 +104,19 @@ install_user_fonts() {
     msg "Downloading JetBrainsMono Nerd Font..."
     curl -fL --retry 3 \
         "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip" \
-        -o "$TEMP_DIR/JetBrainsMono.zip" || die "Failed to download JetBrainsMono Nerd Font"
-    unzip -oq "$TEMP_DIR/JetBrainsMono.zip" -d "$font_dir/JetBrainsMono" ||
-        die "Failed to extract JetBrainsMono Nerd Font"
+        -o "$TEMP_DIR/JetBrainsMono.zip" || { warn "Could not download JetBrainsMono Nerd Font; skipping."; return 0; }
+    unzip -oq "$TEMP_DIR/JetBrainsMono.zip" -d "$font_dir/JetBrainsMono" || { warn "Could not extract JetBrainsMono Nerd Font; skipping."; return 0; }
 
     msg "Downloading Font Awesome 6 Free..."
     curl -fL --retry 3 \
         "https://github.com/FortAwesome/Font-Awesome/releases/download/6.7.2/fontawesome-free-6.7.2-desktop.zip" \
-        -o "$TEMP_DIR/FontAwesome6.zip" || die "Failed to download Font Awesome 6 Free"
+        -o "$TEMP_DIR/FontAwesome6.zip" || { warn "Could not download Font Awesome 6 Free; skipping."; return 0; }
     mkdir -p "$fa_extract"
-    unzip -oq "$TEMP_DIR/FontAwesome6.zip" -d "$fa_extract" ||
-        die "Failed to extract Font Awesome 6 Free"
+    unzip -oq "$TEMP_DIR/FontAwesome6.zip" -d "$fa_extract" || { warn "Could not extract Font Awesome 6 Free; skipping."; return 0; }
     find "$fa_extract" -type f \( -name '*.otf' -o -name '*.ttf' \) \
-        -exec cp -f -t "$font_dir/FontAwesome6" {} + ||
-        die "Failed to copy Font Awesome font files"
+        -exec cp -f -t "$font_dir/FontAwesome6" {} + || { warn "Could not copy Font Awesome font files; skipping."; return 0; }
 
-    fc-cache -f "$font_dir" || die "Failed to refresh font cache"
+    fc-cache -f "$font_dir" || { warn "Could not refresh font cache."; return 0; }
     msg "User fonts installed."
 }
 
@@ -114,15 +125,14 @@ install_nordic_theme() {
     local theme_tmp="$TEMP_DIR/Nordic"
 
     msg "Downloading Nordic GTK theme..."
-    git clone --depth 1 https://github.com/EliverLara/Nordic.git "$theme_tmp" ||
-        die "Failed to download Nordic GTK theme"
-    [[ -d "$theme_tmp/gtk-3.0" ]] || die "Downloaded repository does not look like a GTK theme"
+    git clone --depth 1 https://github.com/EliverLara/Nordic.git "$theme_tmp" || { warn "Could not download Nordic GTK theme; skipping."; return 0; }
+    [[ -d "$theme_tmp/gtk-3.0" ]] || { warn "Downloaded Nordic repository is not usable; skipping."; return 0; }
 
     mkdir -p "$theme_dir"
     rm -rf "$theme_dir/Nordic.new"
-    cp -a "$theme_tmp" "$theme_dir/Nordic.new" || die "Failed to copy Nordic GTK theme"
+    cp -a "$theme_tmp" "$theme_dir/Nordic.new" || { warn "Could not copy Nordic GTK theme; skipping."; return 0; }
     rm -rf "$theme_dir/Nordic"
-    mv "$theme_dir/Nordic.new" "$theme_dir/Nordic" || die "Failed to activate Nordic theme"
+    mv "$theme_dir/Nordic.new" "$theme_dir/Nordic" || { warn "Could not activate Nordic theme."; return 0; }
     msg "Nordic GTK theme installed."
 }
 
@@ -146,7 +156,7 @@ install_wallpapers() {
 
 # Keep all requested packages in clear, maintainable groups.
 PACKAGES_CORE=(
-    sway swaybg swayidle swaylock waybar fuzzel foot sddm
+    sway swaybg swayidle swaylock waybar fuzzel foot
     xorg-x11-server-Xwayland
 )
 PACKAGES_DISPLAY=(kanshi brightnessctl)
@@ -204,9 +214,15 @@ if [[ "$ONLY_CONFIG" == false ]]; then
     fi
 
     msg "Refreshing Fedora package metadata..."
-    sudo dnf makecache --refresh || die "Could not refresh DNF metadata"
+    sudo dnf makecache --refresh || warn "Could not refresh DNF metadata; continuing with cached metadata."
 
     install_group "core Sway desktop" "${PACKAGES_CORE[@]}"
+
+    if [[ "$INSTALL_SDDM" == "true" ]]; then
+        install_group "SDDM display manager" sddm
+    else
+        msg "Skipping SDDM installation; keeping the existing login manager."
+    fi
     install_group "display management" "${PACKAGES_DISPLAY[@]}"
     install_group "desktop utilities and notifications" "${PACKAGES_DESKTOP[@]}"
     install_group "network and Bluetooth" "${PACKAGES_NETWORK[@]}"
@@ -264,11 +280,35 @@ if [[ "$ONLY_CONFIG" == false ]]; then
     install_user_fonts
     install_nordic_theme
 
-    msg "Enabling required system services..."
-    sudo systemctl enable NetworkManager.service || die "Could not enable NetworkManager"
-    sudo systemctl enable bluetooth.service || warn "Could not enable Bluetooth"
-    sudo systemctl enable sddm.service || die "Could not enable SDDM"
-    sudo systemctl set-default graphical.target || warn "Could not set graphical.target"
+    msg "Configuring system services..."
+    if systemctl list-unit-files NetworkManager.service --no-legend 2>/dev/null | grep -q NetworkManager.service; then
+        sudo systemctl enable NetworkManager.service ||
+            warn "Could not enable NetworkManager; continuing."
+    else
+        warn "NetworkManager.service was not found; skipping."
+    fi
+
+    if systemctl list-unit-files bluetooth.service --no-legend 2>/dev/null | grep -q bluetooth.service; then
+        sudo systemctl enable bluetooth.service ||
+            warn "Could not enable Bluetooth; continuing."
+    else
+        msg "bluetooth.service not found; skipping Bluetooth service enablement."
+    fi
+
+    if [[ "$INSTALL_SDDM" == "true" ]]; then
+        if rpm -q sddm >/dev/null 2>&1 &&
+           systemctl list-unit-files sddm.service --no-legend 2>/dev/null | grep -q sddm.service; then
+            sudo systemctl enable sddm.service ||
+                warn "Could not enable SDDM; leaving the current display manager unchanged."
+        else
+            warn "SDDM package/service is not installed; skipping SDDM enablement."
+        fi
+    else
+        msg "Leaving the current display manager unchanged (SDDM is opt-in)."
+    fi
+
+    sudo systemctl set-default graphical.target ||
+        warn "Could not set graphical.target; continuing."
 
     msg "Configuring Flathub..."
     flatpak remote-add --user --if-not-exists flathub \
@@ -327,8 +367,12 @@ fi
 
 msg "Copying Sway configuration..."
 mkdir -p "$CONFIG_DIR"
-[[ -d "$SCRIPT_DIR/config" ]] || die "Config directory not found: $SCRIPT_DIR/config"
-cp -a "$SCRIPT_DIR/config/." "$CONFIG_DIR/" || die "Failed to copy configs"
+if [[ -d "$SCRIPT_DIR/config" ]]; then
+    cp -a "$SCRIPT_DIR/config/." "$CONFIG_DIR/" ||
+        warn "Could not copy Sway config files; continuing."
+else
+    warn "Config directory not found: $SCRIPT_DIR/config; skipping config copy."
+fi
 
 # Configure the MATE PolicyKit authentication agent for Sway.
 POLKIT_AGENT="/usr/libexec/polkit-mate-authentication-agent-1"
@@ -357,14 +401,14 @@ if [[ -d "$SWAY_SCRIPTS" ]]; then
     msg "Setting Sway script permissions..."
     find "$SWAY_SCRIPTS" -type f \
         \( -name '*.sh' -o -name power -o -name screen-off -o -name control-center \) \
-        -exec chmod +x {} + || die "Could not set Sway script permissions."
+        -exec chmod +x {} + || warn "Could not set some Sway script permissions; continuing."
 else
     warn "Sway scripts directory not found: $SWAY_SCRIPTS"
 fi
 if [[ -d "$WAYBAR_SCRIPTS" ]]; then
     msg "Setting Waybar script permissions..."
     find "$WAYBAR_SCRIPTS" -type f -exec chmod +x {} + ||
-        die "Could not set Waybar script permissions."
+        warn "Could not set some Waybar script permissions; continuing."
 else
     warn "Waybar scripts directory not found: $WAYBAR_SCRIPTS"
 fi
@@ -434,12 +478,21 @@ if [[ "$ONLY_CONFIG" == false ]] && command -v flatpak >/dev/null 2>&1; then
     fi
 fi
 
+if ((${#FAILED_PACKAGES[@]} > 0)); then
+    echo
+    warn "Some packages could not be installed; the rest of the installer continued:"
+    printf '  - %s\\n' "${FAILED_PACKAGES[@]}"
+else
+    msg "All requested package installation commands completed successfully."
+fi
+
 msg "Sway setup script finished."
 echo
 echo "Next steps:"
 echo "  1. Review ~/.config/sway/config and your autostart commands."
 echo "  2. Make sure Waybar, SwayNC, and the Polkit agent are started only once."
-echo "  3. Reboot to start SDDM: sudo reboot"
+echo "  3. Reboot when ready: sudo reboot"
+echo "     SDDM is only installed/enabled when INSTALL_SDDM=true."
 echo
 echo "Installation log: $LOG_FILE"
 exit 0
