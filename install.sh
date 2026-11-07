@@ -458,7 +458,7 @@ if [[ "$ONLY_CONFIG" == false && "$INSTALL_BRAVE" == "true" ]]; then
     if sudo dnf config-manager addrepo --overwrite \
         --from-repofile=https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo; then
 
-        sudo dnf install -y brave-browser-origin || warn "Could not install Brave Origin Browser."
+        sudo dnf install -y brave-origin || warn "Could not install Brave Origin Browser."
 
     else
         warn "Could not add Brave repository; skipping Brave Origin."
