@@ -451,13 +451,17 @@ if [[ -f "$SCRIPT_DIR/nvidia-setup.sh" ]]; then
 fi
 
 if [[ "$ONLY_CONFIG" == false && "$INSTALL_BRAVE" == "true" ]]; then
-    msg "Installing Brave Browser..."
+    msg "Installing Brave Origin Browser..."
+
     sudo dnf install -y dnf-plugins-core || warn "Could not install dnf-plugins-core."
+
     if sudo dnf config-manager addrepo --overwrite \
         --from-repofile=https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo; then
-        sudo dnf install -y brave-browser || warn "Could not install Brave Browser."
+
+        sudo dnf install -y brave-browser-origin || warn "Could not install Brave Origin Browser."
+
     else
-        warn "Could not add Brave repository; skipping Brave."
+        warn "Could not add Brave repository; skipping Brave Origin."
     fi
 fi
 
