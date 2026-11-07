@@ -194,7 +194,7 @@ PACKAGES_APPEARANCE=(
 )
 PACKAGES_SYSTEM=(
     git curl wget unzip zip rsync nano vim python3 python3-pip
-    inotify-tools procps-ng psmisc util-linux
+    inotify-tools procps-ng psmisc util-linux network-manager-applet
 )
 
 if [[ "$ONLY_CONFIG" == false ]]; then
