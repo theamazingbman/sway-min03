@@ -354,7 +354,7 @@ PACKAGES_DESKTOP=(
 )
 PACKAGES_NETWORK=(
   NetworkManager NetworkManager-wifi NetworkManager-tui
-  nm-connection-editor bluez blueman
+  nm-connection-editor bluez blueman network-manager-applet
 )
 PACKAGES_AUDIO=(
   pipewire pipewire-alsa pipewire-pulseaudio wireplumber
@@ -383,7 +383,7 @@ PACKAGES_APPEARANCE=(
 )
 PACKAGES_SYSTEM=(
   git curl wget unzip zip rsync nano vim python3 python3-pip
-  inotify-tools procps-ng psmisc util-linux network-manager-applet
+  inotify-tools procps-ng psmisc util-linux
 )
 
 # ----------------------------------------------------------
