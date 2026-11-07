@@ -186,7 +186,7 @@ PACKAGES_SECURITY=(
     bubblewrap
     libseccomp
 )
-PACKAGES_MEDIA=(mpv imv celluloid)
+PACKAGES_MEDIA=(mpv imv celluloid evince)
 PACKAGES_APPEARANCE=(
     adw-gtk3-theme adwaita-icon-theme papirus-icon-theme
     google-noto-color-emoji-fonts google-noto-sans-mono-fonts
