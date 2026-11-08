@@ -3,7 +3,7 @@
 @define-color base     #000000;
 @define-color surface  #202020;
 @define-color overlay  #363636;
-@define-color text     #d5d8e0;
+@define-color text     #d0d7de;
 @define-color lavender #b7bdf8;
 @define-color sapphire #7dc4e4;
 @define-color blue     #285577;
@@ -22,7 +22,6 @@
         "Helvetica Neue",
         sans-serif;
     font-size: 15px;
-    font-weight: bold;
     border: none;
     border-radius: 0;
     min-height: 0;
@@ -31,11 +30,14 @@
 
 /* --- Automatic Bar Height --- */
 window#waybar {
-    min-height: 0;
-    background-color: #000000;
+    background-color: transparent;
     color: @text;
-    transition-property: background-color;
-    transition-duration: 0.5s;
+}
+
+window#waybar > box {
+    background-color: @base;
+    border-radius: 4px;
+    margin: 4px 4px 0 4px;
 }
 
 .modules-left,
@@ -44,25 +46,23 @@ window#waybar {
     min-height: 0;
 }
 
-
 /* --- Workspaces Container (No Outline) --- */
 #workspaces {
-    padding: 0px 5px;
-    margin: 3px 4px;
     background-color: transparent;
-    border: none;
-    border-radius: 0;
+    padding-left: 4px;
 }
 
-
-/* --- Workspace Buttons --- */
+/* 10px a side, one space between the number and the icons (the bar's
+   config): a workspace reads as one group, the gap to the next about three
+   times the spacing inside it, without spreading out at 1080p */
 #workspaces button {
-    padding: 1px 4px;
-    margin: 1px 1px;
-    color: @text;
+    padding: 0 6px;
     background-color: transparent;
-    border-radius: 7px;
-    transition: all 0.3s ease;
+    color: @text;
+    font-size: 15px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    min-width: 12px;
 }
 
 /* Workspace Hover */
@@ -88,7 +88,7 @@ window#waybar {
 /* Empty Workspace */
 #workspaces button.empty:not(.focused) {
     background-color: transparent;
-    color: @text;
+    color: #a0a0a0;
 }
 
 /* Urgent Workspace */
@@ -97,6 +97,15 @@ window#waybar {
     color: @base;
 }
 
+/* Separator styling */
+/* between groups: a faded hairline about half the bar's height, drawn as
+   the border of a thin space (waybar hides a module with no text) */
+#custom-sep {
+    font-size: 1px;
+    padding: 0;
+    margin: 6px 4px;
+    border-left: 2px solid alpha(@grey, 0.65);
+}
 
 /* --- General Module Formatting --- */
 #clock,
@@ -123,8 +132,7 @@ window#waybar {
     box-shadow: none;
 }
 
-
-/* --- System Stats Shared Pill --- */
+/* --- System Stats --- */
 #temperature,
 #cpu,
 #memory {
@@ -135,33 +143,26 @@ window#waybar {
     margin-right: 0;
     color: @text;
     background-color: @base;
-    border-top: 1px solid @overlay;
-    border-bottom: 1px solid @overlay;
+    border: none;
     border-radius: 0;
     box-shadow: none;
 }
 
-/* Left Rounded Edge */
+/* Left Section */
 #temperature {
-    margin-left: 8px;
-    border-left: 1px solid @overlay;
-    border-radius: 10px 0 0 10px;
+    margin-left: 4px;
 }
 
 /* Middle Section */
 #cpu {
-    border-left: none;
-    border-right: none;
+    min-width: 0;
 }
 
-/* Right Rounded Edge */
+/* Right Section */
 #memory {
-    margin-right: 8px;
-    border-right: 1px solid @overlay;
-    border-radius: 0 10px 10px 0;
-    min-width: 78px;
+    margin-right: 4px;
+    min-width: 60px;
 }
-
 
 /* --- Clock --- */
 #clock {
