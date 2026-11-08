@@ -35,7 +35,6 @@ exec swayidle -w \
 
 ### Input configuration
 input type:touchpad {
-    dwt enabled
     tap enabled
     dwt enabled
     natural_scroll enabled
