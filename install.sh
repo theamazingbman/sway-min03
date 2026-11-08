@@ -346,7 +346,7 @@ fix_script_permissions() {
 # ----------------------------------------------------------
 PACKAGES_CORE=(
   sway swaybg swayidle swaylock waybar fuzzel foot
-  xorg-x11-server-Xwayland
+  xorg-x11-server-Xwayland geany ristretto
 )
 PACKAGES_DISPLAY=(kanshi brightnessctl)
 PACKAGES_DESKTOP=(
