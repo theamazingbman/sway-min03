@@ -7,13 +7,14 @@
     // Choose the order of the modules
     "modules-left": [
         "custom/appmenu",
+        "sway/workspaces",
+        "custom/sep",
         "custom/filemanager",
         "custom/browser",
-        "custom/notes",
+        "custom/notes"
         //"sway/mode",
         //"sway/scratchpad",
         //"custom/media"
-        "sway/workspaces"
     ],
     "modules-center": [
         "clock"
@@ -27,6 +28,7 @@
         "temperature",
         "cpu",
         "memory",
+        "custom/sep",
         "custom/notification",
         "pulseaudio",
         "bluetooth",
@@ -41,25 +43,15 @@
     // Modules configuration
     "sway/workspaces": {
         "disable-scroll": false,
-        "all-outputs": true,
+        "all-outputs": false,
         //   "warp-on-scroll": false,
         "on-click": "activate",
         "format": "{icon}",
         "format-icons": {
-            "1": "1",
-            "2": "2",
-            "3": "3",
-            "4": "4",
-            "5": "5",
-            "active": ""
+            "persistent": "●"
         },
         "persistent-workspaces": {
-            "1": [],
-            "2": [],
-            "3": [],
-            "4": [],
-            "5": [],
-            "6": []
+            "1": [], "2": [], "3": [], "4": [], "5": [], "6": []
         }
     },
     "keyboard-state": {
@@ -80,6 +72,10 @@
         "format-icons": ["", ""],
         "tooltip": true,
         "tooltip-format": "{app}: {title}"
+    },
+     "custom/sep": {
+        "format": " ",
+        "tooltip": false
     },
     "mpd": {
         "format": "{stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% ",
@@ -116,7 +112,7 @@
     },
     "tray": {
         // "icon-size": 21,
-        "spacing": 10
+        "spacing": 6
         // "icons": {
         //   "blueman": "bluetooth",
         //   "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
@@ -150,15 +146,12 @@
             "m": 30
         },
         "interval": 30,
-        "format": "<span color='#7dc4e4'> </span>{used}GB",
+        "format": "<span color='#7dc4e4'> </span>{used}",
         "rotate": 0,
-        "format-m": "<span color='#7dc4e4'> </span>{used}GB",
-        "format-h": "<span color='#7dc4e4'> </span>{used}GB",
-        "format-c": "<span color='#7dc4e4'> </span>{used}GB",
         "format-alt": "<span color='#7dc4e4'> </span>{percentage}%",
         "max-length": 10,
         "tooltip": true,
-        "tooltip-format": "\udb83\udf86 Memory usage: {percentage}%\n\ue266 Used: {used:0.2f}GB / {total:0.2f}GB\n\uf85a Available: {availGB:0.2f}GB\n\uf233 Swap used: {swapUsed:0.2f}GB / {swapTotal:0.2f}GB ({swapPercentage}%)"
+        "tooltip-format": "\udb83\udf86 Memory usage: {percentage}%\n\ue266 Used: {used:0.2f}GB / {total:0.2f}GB\n\uf85a Available: {avail:0.2f}GB\n\uf233 Swap used: {swapUsed:0.2f}GB / {swapTotal:0.2f}GB ({swapPercentage}%)"
     },
     "temperature": {
         // "thermal-zone": 2,
