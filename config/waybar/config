@@ -287,7 +287,7 @@
     "custom/power": {
         "format" : "⏻ ",
         "tooltip": false,
-        "on-click": "~/.config/sway/scripts/control-center"
+        "on-click": "~/.config/sway/scripts/control-center.sh"
     },
     "custom/notification": {
             "tooltip": false,
